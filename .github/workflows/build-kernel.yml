@@ -23,6 +23,8 @@ jobs:
             ARCH
             ADD_LOCALVERSION_TO_FILENAME
             EXTRA_CMDS
+            CONFIG_LOCALVERSION
+            CONFIG_LOCALVERSION_AUTO
             USE_CUSTOM_CLANG
             CUSTOM_CLANG_SOURCE
             CUSTOM_CLANG_BRANCH
@@ -236,6 +238,12 @@ jobs:
         fi
         if [ ${{ env.DISABLE_CC_WERROR }} = true ]; then
             echo "CONFIG_CC_WERROR=n" >> arch/${{ env.ARCH }}/configs/${{ env.KERNEL_CONFIG }}
+        fi
+        if [ "${{ env.CONFIG_LOCALVERSION_AUTO }}" = false ]; then
+          sed -i 's/^CONFIG_LOCALVERSION_AUTO=y/CONFIG_LOCALVERSION_AUTO=n/' arch/${{ env.ARCH }}/configs/${{ env.KERNEL_CONFIG }}
+        fi
+        if [ -n "${{ env.CUSTOM_LOCALVERSION }}" ]; then
+          sed -i 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION="${{ env.CONFIG_LOCALVERSION }}"/' arch/${{ env.ARCH }}/configs/${{ env.KERNEL_CONFIG }}
         fi
 
     - name: Setup ccache
